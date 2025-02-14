@@ -1,0 +1,7 @@
+{
+  "name": "DinnerPicker-Vue/IonicApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
