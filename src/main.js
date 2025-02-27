@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router';
 import store from './store';
 
+import { auth } from '@/firebase'; // Importer auth fra Firebase
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -45,6 +46,14 @@ const app = createApp(App)
   .use(router);
 
 app.component('base-layout', BaseLayout);
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    console.log('Bruker er innlogget:', user);
+  } else {
+    console.log('Ingen bruker er innlogget');
+  }
+});
 
 router.isReady().then(() => {
   app.mount('#app');

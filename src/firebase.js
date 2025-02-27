@@ -1,7 +1,6 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"; // Importer Firestore-funksjonen
-import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; 
+import { getAuth } from "firebase/auth"; // Importer autentisering
 
 // Hent Firebase-konfigurasjon fra .env file
 const firebaseConfig = {
@@ -20,8 +19,8 @@ const app = initializeApp(firebaseConfig);
 // Initialiser Firestore
 const db = getFirestore(app);
 
-// Initialiser Analytics
-const analytics = getAnalytics(app);
+// Initialiser Authentication
+const auth = getAuth(app); // Initialiser autentisering
 
-// Eksporter db slik at den kan brukes i andre filer
-export { db };
+// Eksporter db og auth
+export { db, auth };
