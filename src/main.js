@@ -50,8 +50,10 @@ app.component('base-layout', BaseLayout);
 auth.onAuthStateChanged(user => {
   if (user) {
     console.log('Bruker er innlogget:', user);
+    store.dispatch('setUser', user); // Oppdaterer brukeren i store
   } else {
     console.log('Ingen bruker er innlogget');
+    store.dispatch('setUser', null); // Setter bruker til null
   }
 });
 
