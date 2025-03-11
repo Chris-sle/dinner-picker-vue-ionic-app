@@ -6,13 +6,13 @@
         <ion-card-content>
             <ion-item>
                 
-                <ion-input ref="emailInput" @model="email" type="email" fill="solid" label="E-post"
+                <ion-input ref="emailInput" v-model="email" type="email" fill="solid" label="E-post"
                     label-placement="floating":clear-input="true" error-text="Ugyldig e-post"
                     @ionInput="validateEmail" @ionBlur="markEmailTouched"></ion-input>
             </ion-item>
             <ion-item>
                 
-                <ion-input ref="password" @model="password" type="password" fill="solid" label="Passord"
+                <ion-input ref="password" v-model="password" type="password" fill="solid" label="Passord"
                     label-placement="floating"></ion-input>
             </ion-item>
             

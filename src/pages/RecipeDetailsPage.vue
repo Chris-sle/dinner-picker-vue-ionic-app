@@ -1,6 +1,6 @@
 <template>
     <base-layout page-title="Recipe Details">
-        <p>this is the recupe details page!</p>
+        <p>this is the recipe details page!</p>
     </base-layout>
 </template>
 

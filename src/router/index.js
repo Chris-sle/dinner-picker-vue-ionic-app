@@ -3,7 +3,6 @@ import Auth from '../components/base/auth.vue';
 import HomePage from '../pages/HomePage.vue';
 import RecipeLibraryPage from '../pages/RecipeLibraryPage.vue';
 import UserProfilePage from '../pages/UserProfilePage.vue';
-import RecipeDetailsPage from '../pages/RecipeDetailsPage.vue';
 import { auth } from '@/firebase'; // Importer auth fra Firebase
 
 const routes = [
@@ -32,9 +31,8 @@ const routes = [
     component: UserProfilePage
   },
   {
-    path: '/recipedetails',
-    name: 'RecipeDetailsPage',
-    component: RecipeDetailsPage
+    path: '/recipedetails/:id',
+    component: () => import('../pages/RecipeDetailsPage.vue')
   }
 ]
 
