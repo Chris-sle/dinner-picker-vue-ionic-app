@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import { db, auth } from '@/firebase';
-import { collection, getDocs, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, addDoc, setDoc, doc } from "firebase/firestore";
 
 const store = createStore({
     state() {
@@ -56,29 +56,66 @@ const store = createStore({
             const favoriteRef = doc(db, "userFavorites", userId); // Reference to the user's favorites document
 
             try {
-                // Check if the favorites document already exists
                 const docSnap = await getDoc(favoriteRef);
 
+                // Check if the document exists, and create it if not
                 if (!docSnap.exists()) {
-                    // If it doesn't exist, create it with an empty favoriteIds array
                     await setDoc(favoriteRef, { favoriteIds: [] });
+                    console.log("Created user favorites document.");
                 }
 
-                // Then, add the recipe ID to the user's favoriteIds
                 const existingFavorites = docSnap.data()?.favoriteIds || [];
 
                 if (!existingFavorites.includes(recipeId)) {
+                    // Log the favorite ID being added
+                    console.log("Adding favorite:", recipeId);
                     await setDoc(favoriteRef, {
                         favoriteIds: [...existingFavorites, recipeId] // Update the favorites list
                     }, { merge: true });
+                    console.log("Favorite added successfully.");
+                } else {
+                    console.log("Recipe is already favorited.");
                 }
+
                 commit('addFavorite', recipeId); // Update the Vuex state
             } catch (error) {
                 console.error("Error saving favorite:", error);
             }
         },
-        setUser({ commit }, user) {
+        async removeNewFavorite({ commit }, recipeId) {
+            // Logic to remove favorite from Firestore...
+            commit('removeFavorite', recipeId); // Update local state
+            const userId = auth.currentUser?.uid; // Ensure user is logged in
+            const favoriteRef = doc(db, "userFavorites", userId); // Reference user favorites document
+
+            try {
+                const docSnap = await getDoc(favoriteRef);
+
+                if (!docSnap.exists()) {
+                    await setDoc(favoriteRef, { favoriteIds: [] });
+                }
+
+                const existingFavorites = docSnap.data()?.favoriteIds || [];
+
+                if (!existingFavorites.includes(recipeId)) {
+                    await setDoc(favoriteRef, {
+                        favoriteIds: [...existingFavorites, recipeId]
+                    }, { merge: true });
+                }
+                commit('addFavorite', recipeId);
+            } catch (error) {
+                console.error("Error saving favorite:", error);
+            }
+        },
+        async setUser({ commit }, user) {
             commit('setUser', user);
+            if (user) {
+                const favoriteRef = doc(db, "userFavorites", user.uid);
+                const favoriteDoc = await getDoc(favoriteRef);
+                if (favoriteDoc.exists()) {
+                    commit('setFavorites', favoriteDoc.data().favoriteIds || []);
+                }
+            }
         }
     },
     getters: {

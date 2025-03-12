@@ -53,7 +53,8 @@ export default {
             this.$router.push({ name: 'RecipeDetails', params: { id: recipeId } });
         },
         toggleFavorite(recipeId) {
-            this.$emit('addFavorite', recipeId); // Emit the favorite action
+            const isCurrentlyFavorited = this.isFavorited(recipeId);
+            this.$emit(isCurrentlyFavorited ? 'removeFavorite' : 'addFavorite', recipeId);
         },
         isFavorited(recipeId) {
             return this.$store.getters.favoriteRecipes.some(recipe => recipe.id === recipeId);

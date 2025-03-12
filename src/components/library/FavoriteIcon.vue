@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         toggleFavorite() {
-            this.$emit('toggleFavorite');
+            this.$emit('toggleFavorite'); // Emit the event for the parent to handle
         }
     }
 }
@@ -37,8 +37,8 @@ export default {
 <style scoped>
 .favorite-icon {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     cursor: pointer;
 }
 </style>
