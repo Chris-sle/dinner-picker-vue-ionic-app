@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
-import { db } from '@/firebase';
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db, auth } from '@/firebase';
+import { collection, getDocs, addDoc, setDoc, doc } from "firebase/firestore";
 
 const store = createStore({
     state() {
@@ -30,6 +30,7 @@ const store = createStore({
             try {
                 const querySnapshot = await getDocs(collection(db, "dinner-recipes"));
                 const recipes = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log(recipes)
                 commit('setRecipes', recipes);
             } catch (error) {
                 console.error("Error fetching recipes:", error);
@@ -45,13 +46,36 @@ const store = createStore({
             }
 
         },
-        addToFavorites({ commit }, recipeId) {
-            commit('addFavorite', recipeId);
-            // Here you could add logic to save to database or localStorage
-        },
-        removeFromFavorites({ commit }, recipeId) {
-            commit('removeFavorite', recipeId);
-            // Here you could add logic to remove from database or localStorage
+        async addNewFavorite({ commit }, recipeId) {
+            const userId = auth.currentUser?.uid; // Ensure you're getting the user ID
+            if (!userId) {
+                console.error("User is not logged in, cannot save favorite.");
+                return;
+            }
+
+            const favoriteRef = doc(db, "userFavorites", userId); // Reference to the user's favorites document
+
+            try {
+                // Check if the favorites document already exists
+                const docSnap = await getDoc(favoriteRef);
+
+                if (!docSnap.exists()) {
+                    // If it doesn't exist, create it with an empty favoriteIds array
+                    await setDoc(favoriteRef, { favoriteIds: [] });
+                }
+
+                // Then, add the recipe ID to the user's favoriteIds
+                const existingFavorites = docSnap.data()?.favoriteIds || [];
+
+                if (!existingFavorites.includes(recipeId)) {
+                    await setDoc(favoriteRef, {
+                        favoriteIds: [...existingFavorites, recipeId] // Update the favorites list
+                    }, { merge: true });
+                }
+                commit('addFavorite', recipeId); // Update the Vuex state
+            } catch (error) {
+                console.error("Error saving favorite:", error);
+            }
         },
         setUser({ commit }, user) {
             commit('setUser', user);

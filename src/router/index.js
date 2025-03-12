@@ -3,37 +3,16 @@ import Auth from '../components/base/auth.vue';
 import HomePage from '../pages/HomePage.vue';
 import RecipeLibraryPage from '../pages/RecipeLibraryPage.vue';
 import UserProfilePage from '../pages/UserProfilePage.vue';
-import { auth } from '@/firebase'; // Importer auth fra Firebase
+import { auth } from '@/firebase';
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/auth' // Omdirigere til Auth-siden ved oppstart
-  },
-  {
-    path: '/auth',
-    name: 'Auth',
-    component: Auth // Legg til Auth-ruten
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    component: HomePage
-  },
-  {
-    path: '/recipelibrary',
-    name: 'RecipeLibrary',
-    component: RecipeLibraryPage
-  },
-  {
-    path: '/userprofile',
-    name: 'UserProfile',
-    component: UserProfilePage
-  },
-  {
-    path: '/recipedetails/:id',
-    component: () => import('../pages/RecipeDetailsPage.vue')
-  }
+  { path: '/', redirect: '/auth' },
+  { path: '/auth', name: 'Auth', component: Auth },
+  { path: '/home', name: 'Home', component: HomePage },
+  { path: '/recipe-library', name: 'RecipeLibrary', component: RecipeLibraryPage },
+  { path: '/userprofile', name: 'UserProfile', component: UserProfilePage },
+  { path: '/recipedetails/:id', name: 'RecipeDetails', component: () => import('../pages/RecipeDetailsPage.vue') },
+  { path: '/:catchAll(.*)', redirect: '/home' } 
 ]
 
 const router = createRouter({
@@ -42,11 +21,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const user = auth.currentUser; // Sjekk den nåværende brukerens status
-  if (to.name !== 'Auth' && !user) { // Hvis brukeren ikke er logget inn
-    next({ name: 'Auth' }); // Omdirigere til Auth
+  const user = auth.currentUser;
+  if (to.name !== 'Auth' && !user) {
+    next({ name: 'Auth' });
   } else {
-    next(); // Fortsett til den ønskede ruten
+    next();
   }
 });
 

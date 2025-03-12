@@ -2,14 +2,13 @@
     <ion-menu :content-id="contentId" side="start" menu-id="main">
         <ion-content>
             <ion-list>
-                <ion-item button @click="goToHome">Hjem</ion-item>
-                <ion-item button @click="goToLibrary">Bibliotek</ion-item>
-                <!-- Add more menu items as needed -->
+                <ion-item button @click="navigateAndClose('Home')">Hjem</ion-item>
+                <ion-item button @click="navigateAndClose('RecipeLibrary')">Bibliotek</ion-item>
             </ion-list>
         </ion-content>
     </ion-menu>
 
-    <ion-page :id="contentId">
+    <ion-page :id="contentId" v-bind="$attrs">
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
@@ -24,7 +23,7 @@
         </ion-header>
 
         <ion-content>
-            <slot></slot> <!-- Dette er hvor innholdet fra barna blir plassert -->
+            <slot></slot>
         </ion-content>
     </ion-page>
 </template>
@@ -72,11 +71,10 @@ export default {
         },
     },
     methods: {
-        goToHome() {
-            this.$router.push({ name: 'Home' });
-        },
-        goToLibrary() {
-            this.$router.push({ name: 'RecipeLibrary' });
+        async navigateAndClose(routeName) {
+            await this.$router.push({ name: routeName });
+            const menu = document.querySelector('ion-menu');
+            menu.close();
         },
         goToProfile() {
             this.$router.push({ name: 'UserProfile' });
@@ -88,7 +86,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-/* Add additional styles if needed */
-</style>
