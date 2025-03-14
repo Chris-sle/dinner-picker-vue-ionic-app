@@ -23,6 +23,9 @@ const store = createStore({
         },
         setUser(state, user) {
             state.user = user; // Setter brukeren
+        },
+        setFavorites(state, favoriteIds) { // New mutation for setting favorites
+            state.favoriteIds = favoriteIds;
         }
     },
     actions: {
@@ -60,7 +63,7 @@ const store = createStore({
 
                 // Check if the document exists, and create it if not
                 if (!docSnap.exists()) {
-                    await setDoc(favoriteRef, { favoriteIds: [] });
+                    await setDoc(favoriteRef, { userId: [] });
                     console.log("Created user favorites document.");
                 }
 
@@ -83,28 +86,26 @@ const store = createStore({
             }
         },
         async removeNewFavorite({ commit }, recipeId) {
-            // Logic to remove favorite from Firestore...
-            commit('removeFavorite', recipeId); // Update local state
+            commit('removeFavorite', recipeId); // Update local state immediately
+        
             const userId = auth.currentUser?.uid; // Ensure user is logged in
             const favoriteRef = doc(db, "userFavorites", userId); // Reference user favorites document
-
+        
             try {
                 const docSnap = await getDoc(favoriteRef);
-
-                if (!docSnap.exists()) {
-                    await setDoc(favoriteRef, { favoriteIds: [] });
-                }
-
-                const existingFavorites = docSnap.data()?.favoriteIds || [];
-
-                if (!existingFavorites.includes(recipeId)) {
+                if (docSnap.exists()) {
+                    const existingFavorites = docSnap.data()?.favoriteIds || [];
+                    const updatedFavorites = existingFavorites.filter(id => id !== recipeId);
+        
                     await setDoc(favoriteRef, {
-                        favoriteIds: [...existingFavorites, recipeId]
+                        favoriteIds: updatedFavorites // Update the favorites list
                     }, { merge: true });
+                    console.log("Favorite removed successfully.");
+                } else {
+                    console.error("User favorites document does not exist.");
                 }
-                commit('addFavorite', recipeId);
             } catch (error) {
-                console.error("Error saving favorite:", error);
+                console.error("Error removing favorite:", error);
             }
         },
         async setUser({ commit }, user) {

@@ -1,6 +1,7 @@
 <template>
     <ion-card>
         <img :src="recipe.image" alt="Recipe Image" v-if="recipe.image" />
+        <FavoriteIcon :recipeId="recipe.id" />
         <ion-card-header>
             <ion-card-title>{{ recipe.name }}</ion-card-title>
             <ion-card-subtitle>{{ recipe.type }}</ion-card-subtitle>
@@ -17,6 +18,7 @@
 <script>
 import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent } from '@ionic/vue'; // Import Ionic components
 import IngredientList from './IngredientList.vue'; // Import your ingredient list component
+import FavoriteIcon from '../library/FavoriteIcon.vue';
 
 export default {
     name: 'RecipeCard',
@@ -26,7 +28,8 @@ export default {
         IonCardTitle,
         IonCardSubtitle,
         IonCardContent,
-        IngredientList
+        IngredientList,
+        FavoriteIcon
     },
     props: {
         recipe: {
