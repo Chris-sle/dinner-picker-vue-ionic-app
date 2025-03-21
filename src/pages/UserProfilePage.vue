@@ -1,20 +1,21 @@
 <template>
-    <base-layout page-title="Profile">
-        <p>this is the profile page!</p>
-    </base-layout>
+  <base-layout page-title="Profile">
+    <user-favorites />
+    <user-recipes />
+  </base-layout>
 </template>
 
 <script>
 import BaseLayout from '../components/base/baseLayout.vue';
+import UserFavorites from '../components/users/UserFavorites.vue';
+import UserRecipes from '../components/users/UserRecipes.vue';
 
 export default {
   name: 'UserProfilePage',
   components: {
     BaseLayout,
-    
-  },
-  methods: {
-    
+    UserFavorites,
+    UserRecipes
   }
 }
 </script>

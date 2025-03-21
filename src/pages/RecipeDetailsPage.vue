@@ -36,10 +36,10 @@ export default {
     methods: {
         async fetchRecipe(id) {
             try {
-                // Fetch the recipe from Firestore
                 const recipeDoc = await getDoc(doc(db, "dinner-recipes", id));
                 if (recipeDoc.exists()) {
                     this.recipe = { id: recipeDoc.id, ...recipeDoc.data() }; // Set the fetched recipe
+                    console.log(this.recipe); // Log the recipe data to check its structure
                 } else {
                     console.error("Ingen oppskrift funnet!");
                 }

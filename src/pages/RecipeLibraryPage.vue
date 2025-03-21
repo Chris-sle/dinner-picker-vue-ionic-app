@@ -2,11 +2,7 @@
     <base-layout page-title="Oppskriftsbibliotek">
         <recipe-grid :recipes="allRecipes" @addFavorite="addFavorite"></recipe-grid>
 
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button @click="openAddRecipeModal">
-                <ion-icon :icon="add"></ion-icon>
-            </ion-fab-button>
-        </ion-fab>
+        <modal-button :icon="add" @click="openAddRecipeModal"></modal-button>
 
         <add-recipe-modal :is-open="isAddRecipeModalOpen" @close="closeAddRecipeModal"
             @submit="submitRecipe"></add-recipe-modal>
@@ -14,19 +10,17 @@
 </template>
 
 <script>
-import { IonFab, IonFabButton, IonIcon } from "@ionic/vue";
-import { add } from 'ionicons/icons';
 import { mapGetters } from 'vuex';
+import { add } from 'ionicons/icons';
 import RecipeGrid from '../components/library/RecipeGrid.vue';
 import AddRecipeModal from '../components/library/AddRecipeModal.vue';
+import ModalButton from '../components/base/ModalButton.vue'; // Import the ModalButton component
 
 export default {
     components: {
         RecipeGrid,
         AddRecipeModal,
-        IonFab,
-        IonFabButton,
-        IonIcon
+        ModalButton // Register the ModalButton component
     },
     data() {
         return {

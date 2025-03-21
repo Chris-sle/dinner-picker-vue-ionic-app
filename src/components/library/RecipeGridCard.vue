@@ -1,5 +1,5 @@
 <template>
-    <ion-col size="6" size-md="4" size-lg="3">
+    <ion-col size="12" size-md="4" size-lg="3">
         <ion-card @click="viewRecipeDetails(recipe.id)" button>
             <img :src="recipe.image" alt="Recipe Image" v-if="recipe.image">
             <FavoriteIcon :recipeId="recipe.id" />

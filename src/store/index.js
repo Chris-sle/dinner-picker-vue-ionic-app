@@ -22,7 +22,7 @@ const store = createStore({
             state.favoriteIds = state.favoriteIds.filter(id => id !== recipeId);
         },
         setUser(state, user) {
-            state.user = user; // Setter brukeren
+            state.user = user;
         },
         setFavorites(state, favoriteIds) { // New mutation for setting favorites
             state.favoriteIds = favoriteIds;
@@ -40,6 +40,7 @@ const store = createStore({
             }
         },
         async addNewRecipe({ state }, newRecipe) {
+            console.log('Submitting recipe:', newRecipe);
             try {
                 // Bruk Firestore sin funksjon for å legge til oppskrift
                 await addDoc(collection(db, "dinner-recipes"), newRecipe);
@@ -117,7 +118,8 @@ const store = createStore({
                     commit('setFavorites', favoriteDoc.data().favoriteIds || []);
                 }
             }
-        }
+        },
+        
     },
     getters: {
         allRecipes: state => state.recipes,

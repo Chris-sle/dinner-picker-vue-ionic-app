@@ -10,33 +10,24 @@
         </ion-header>
         <ion-content class="ion-padding">
             <form @submit.prevent="submitRecipe">
-                <ion-item>
-                    <ion-label position="floating">Navn på rett</ion-label>
-                    <ion-input v-model="newRecipe.name" required></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-label position="floating">Bilde URL (valgfritt)</ion-label>
-                    <ion-input v-model="newRecipe.image" type="url"></ion-input>
-                </ion-item>
+                <recipe-form :recipe="newRecipe" />
 
-                <div v-for="(ingredient, index) in newRecipe.ingredients" :key="index">
+                <div v-for="(ingredient, index) in newRecipe.ingredients" :key="index" class="ingredient-input">
                     <ion-item>
-                        <ion-label position="floating">Ingrediens {{ index + 1 }} navn</ion-label>
-                        <ion-input v-model="ingredient.name" required></ion-input>
+                        <ion-input label="Ingrediens navn" label-placement="floating" v-model="ingredient.name"
+                            placeholder="Navn på ingrediens" required>
+                        </ion-input>
+
+                        <ion-input label="Mengde" label-placement="floating" v-model="ingredient.amount"
+                            placeholder="Skriv inn mengde" required>
+                        </ion-input>
+                        <ion-button @click="removeIngredient(index)" color="danger">X</ion-button>
                     </ion-item>
-                    <ion-item>
-                        <ion-label position="floating">Ingrediens {{ index + 1 }} mengde</ion-label>
-                        <ion-input v-model="ingredient.amount" required></ion-input>
-                    </ion-item>
-                    <ion-button @click="removeIngredient(index)" color="danger">Fjern ingrediens</ion-button>
                 </div>
 
-                <ion-button @click="addIngredient" expand="block" class="ion-margin-top">Legg til ingrediens</ion-button>
-
-                <ion-item>
-                    <ion-label position="floating">Fremgangsmåte</ion-label>
-                    <ion-textarea v-model="newRecipe.steps" rows="6" required></ion-textarea>
-                </ion-item>
+                <ion-button type="button" @click="addIngredient" expand="block" class="ion-margin-top">
+                    Legg til flere ingredienser
+                </ion-button>
 
                 <ion-button type="submit" expand="block" class="ion-margin-top">Legg til oppskrift</ion-button>
             </form>
@@ -45,6 +36,8 @@
 </template>
 
 <script>
+import { auth } from '@/firebase';
+import RecipeForm from './RecipeForm.vue';
 import {
     IonModal,
     IonHeader,
@@ -54,9 +47,7 @@ import {
     IonButton,
     IonContent,
     IonItem,
-    IonLabel,
-    IonInput,
-    IonTextarea
+    IonInput
 } from "@ionic/vue";
 
 export default {
@@ -70,9 +61,8 @@ export default {
         IonButton,
         IonContent,
         IonItem,
-        IonLabel,
         IonInput,
-        IonTextarea
+        RecipeForm
     },
     props: {
         isOpen: {
@@ -85,38 +75,78 @@ export default {
             newRecipe: {
                 name: '',
                 image: '',
-                ingredients: [{ name: '', amount: '' }],
-                steps: ''
+                ingredients: [{
+                    name: '',
+                    amount: ''
+                }],
+                steps: '',
+                type: ''
             }
         };
     },
     methods: {
         closeModal() {
-            this.$emit('close');
-            this.resetForm();
+            this.$emit('close'); // Emit close event to parent
+            this.resetForm(); // Reset form
         },
-        submitRecipe() {
-            this.$emit('submit', this.newRecipe);
-            this.resetForm();
+        async submitRecipe() {
+            if (this.isSubmitting) return; // Prevent multiple submissions
+            this.isSubmitting = true;
+
+            const userId = auth.currentUser?.uid;
+            if (!userId) {
+                alert("Du må være innlogget for å legge til en oppskrift.");
+                return;
+            }
+
+            const recipeData = {
+                name: this.newRecipe.name,
+                image: this.newRecipe.image,
+                ingredients: this.newRecipe.ingredients,
+                steps: this.newRecipe.steps,
+                type: this.newRecipe.type,
+                userId: userId
+            };
+
+            console.log('Submitting recipe:', recipeData);
+
+            try {
+                await this.$store.dispatch('addNewRecipe', recipeData);
+                await this.$store.dispatch('fetchRecipes');
+                this.closeModal();
+                console.log('Success!');
+            } catch (error) {
+                console.error('Error adding new recipe:', error);
+            } finally {
+                this.isSubmitting = false; // Reset the flag after processing
+            }
         },
         addIngredient() {
-            this.newRecipe.ingredients.push({ name: '', amount: '' });
+            this.newRecipe.ingredients.push({ name: '', amount: '' }); // Add a new ingredient object
         },
         removeIngredient(index) {
-            this.newRecipe.ingredients.splice(index, 1);
+            this.newRecipe.ingredients.splice(index, 1); // Remove the ingredient at the specified index
         },
         resetForm() {
             this.newRecipe = {
                 name: '',
                 image: '',
-                ingredients: [{ name: '', amount: '' }], // Reset med en tom ingrediens
-                steps: ''
-            };
-        }
+                ingredients: [{
+                    name: '',
+                    amount: ''
+                }],
+                steps: '',
+                type: ''
+            }; // Reset to default state
+        },
     }
 }
 </script>
 
 <style scoped>
-
+/* Your styles here if needed */
+.ingredient-input {
+    margin-bottom: 20px;
+    /* Add some spacing between ingredient input fields */
+}
 </style>

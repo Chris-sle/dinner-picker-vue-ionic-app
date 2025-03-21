@@ -42,7 +42,7 @@ export default {
     data() {
         return {
             starOutline,
-            starFilled: star // Assign the imported icon correctly
+            starFilled: star
         };
     }
 }

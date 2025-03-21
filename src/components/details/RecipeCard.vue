@@ -1,7 +1,7 @@
 <template>
     <ion-card>
         <img :src="recipe.image" alt="Recipe Image" v-if="recipe.image" />
-        <FavoriteIcon :recipeId="recipe.id" />
+        <FavoriteIcon v-if="recipe.id" :recipeId="recipe.id" />
         <ion-card-header>
             <ion-card-title>{{ recipe.name }}</ion-card-title>
             <ion-card-subtitle>{{ recipe.type }}</ion-card-subtitle>
