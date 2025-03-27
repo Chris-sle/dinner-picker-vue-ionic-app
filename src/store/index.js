@@ -45,8 +45,10 @@ const store = createStore({
                 // Bruk Firestore sin funksjon for å legge til oppskrift
                 await addDoc(collection(db, "dinner-recipes"), newRecipe);
                 console.log("Oppskrift lagt til!");
+                await dispatch('fetchRecipes');
             } catch (error) {
                 console.error("Feil ved legging til oppskrift: ", error);
+                throw error;
             }
 
         },
