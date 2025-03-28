@@ -9,7 +9,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-            <recipe-form @submitted="closeModal"  />
+            <recipe-form @submitted="closeModal" />
         </ion-content>
     </ion-modal>
 </template>
@@ -46,9 +46,12 @@ export default {
     },
     methods: {
         closeModal() {
-            this.$emit('close');
-        },
-        
+            this.$emit('close'); // Emit close event
+        }
     }
 }
 </script>
+
+<style scoped>
+/* Your styles here if needed */
+</style>

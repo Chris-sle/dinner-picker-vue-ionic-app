@@ -1,12 +1,10 @@
 <template>
     <base-layout page-title="Oppskriftsbibliotek">
-        <recipe-grid :recipes="allRecipes" @addFavorite="addFavorite" @removeFavorite="removeFavorite">
-        </recipe-grid>
+        <recipe-grid :recipes="allRecipes" @addFavorite="addFavorite" @removeFavorite="removeFavorite"></recipe-grid>
 
         <modal-button :icon="add" @click="openAddRecipeModal"></modal-button>
 
-        <add-recipe-modal :is-open="isAddRecipeModalOpen" @close="closeAddRecipeModal" @submit="submitRecipe">
-        </add-recipe-modal>
+        <add-recipe-modal :is-open="isAddRecipeModalOpen" @close="closeAddRecipeModal"></add-recipe-modal>
     </base-layout>
 </template>
 
@@ -46,23 +44,12 @@ export default {
             if (this.isUserLoggedIn()) {
                 this.isAddRecipeModalOpen = true; // Open the modal if user is logged in
             } else {
-                console.log('User is not logged in');
-                // Handle not logged in state (e.g., show a message or redirect to login)
+                // Provide better feedback for the user
+                alert('Du må være innlogget for å legge til en oppskrift');
             }
         },
         closeAddRecipeModal() {
             this.isAddRecipeModalOpen = false; // Close the modal
-        },
-        async submitRecipe(newRecipe) {
-            console.log('Submitting recipe:', newRecipe); // Log the new recipe for debugging
-            try {
-                await this.$store.dispatch('addNewRecipe', newRecipe); // Dispatch action to add the recipe
-                await this.$store.dispatch('fetchRecipes'); // Refetch updated recipes
-                this.closeAddRecipeModal(); // Close the modal after submission
-                console.log('Success!'); // Log success
-            } catch (error) {
-                console.error('Error adding new recipe:', error); // Log errors if any
-            }
         },
         isUserLoggedIn() {
             return this.$store.getters.isLoggedIn; // Check user login status

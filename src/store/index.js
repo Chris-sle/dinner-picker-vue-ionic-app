@@ -39,7 +39,7 @@ const store = createStore({
                 console.error("Error fetching recipes:", error);
             }
         },
-        async addNewRecipe({ state }, newRecipe) {
+        async addNewRecipe({ commit, dispatch }, newRecipe) {
             console.log('Submitting recipe:', newRecipe);
             try {
                 // Bruk Firestore sin funksjon for å legge til oppskrift

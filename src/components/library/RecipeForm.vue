@@ -5,7 +5,7 @@
             <ion-input 
                 label="Navn på rett" 
                 label-placement="floating" 
-                v-model="recipe.name" 
+                v-model="newRecipe.name" 
                 required 
                 placeholder="Skriv inn navn på retten">
             </ion-input>
@@ -16,7 +16,7 @@
             <ion-input 
                 label="Bilde URL (valgfritt)" 
                 label-placement="floating" 
-                v-model="recipe.image" 
+                v-model="newRecipe.image" 
                 type="url" 
                 placeholder="Skriv inn bilde URL">
             </ion-input>
@@ -27,7 +27,7 @@
             <ion-select 
                 label="Type Mat" 
                 label-placement="floating" 
-                v-model="recipe.type" 
+                v-model="newRecipe.type" 
                 placeholder="Velg type">
                 <ion-select-option value="fjærfe">fjærfe</ion-select-option>
                 <ion-select-option value="storfe">Storfe</ion-select-option>
@@ -45,7 +45,7 @@
             <ion-textarea 
                 label="Fremgangsmåte" 
                 label-placement="floating" 
-                v-model="recipe.steps" 
+                v-model="newRecipe.steps" 
                 rows="6" 
                 required 
                 placeholder="Beskriv fremgangsmåten">
@@ -53,7 +53,7 @@
         </ion-item>
 
         <!-- Ingredients Section -->
-        <div v-for="(ingredient, index) in recipe.ingredients" :key="index" class="ingredient-input">
+        <div v-for="(ingredient, index) in newRecipe.ingredients" :key="index" class="ingredient-input">
             <ion-item>
                 <ion-input 
                     label="Ingrediens navn" 
@@ -92,12 +92,6 @@ export default {
         IonTextarea,
         IonButton
     },
-    props: {
-        recipe: {
-            type: Object,
-            required: true
-        }
-    },
     data() {
         return {
             isSubmitting: false,
@@ -112,12 +106,14 @@ export default {
     },
     methods: {
         addIngredient() {
-            this.recipe.ingredients.push({ name: '', amount: '' });
+            this.newRecipe.ingredients.push({ name: '', amount: '' });
         },
+
         removeIngredient(index) {
-            this.recipe.ingredients.splice(index, 1);
+            this.newRecipe.ingredients.splice(index, 1);
         },
-        async submitRecipe() {
+
+        submitRecipe() {
             if (this.isSubmitting) return;
             this.isSubmitting = true;
 
@@ -130,23 +126,25 @@ export default {
 
             // Construct recipe data to include userId
             const recipeData = {
-                ...this.recipe,
-                userId // Add userId into the recipe data
+                ...this.newRecipe,
+                userId
             };
 
-            console.log('Submitting recipe:', recipeData);
+            console.log('Sending recipe to vuex:', recipeData);
 
             try {
-                await this.$store.dispatch('addNewRecipe', recipeData);
-                this.$emit('submitted');
+                this.$store.dispatch('addNewRecipe', recipeData);
+                this.$emit('submitted'); // Emit event to indicate submission was successful
                 console.log('Success!');
             } catch (error) {
                 console.error('Error adding new recipe:', error);
+                alert('Det oppstod en feil. Vennligst prøv igjen.');
             } finally {
-                this.resetForm();
+                this.resetForm(); // Reset the form for future submissions
                 this.isSubmitting = false;
             }
         },
+
         resetForm() {
             this.newRecipe = {
                 name: '',
@@ -154,7 +152,7 @@ export default {
                 ingredients: [{ name: '', amount: '' }],
                 steps: '',
                 type: ''
-            }; // Reset to default state
+            };
         }
     }
 }
@@ -164,5 +162,4 @@ export default {
 .ingredient-input {
     margin-bottom: 20px; /* Add spacing between ingredient input fields */
 }
-</style>
-
+</style> // User
