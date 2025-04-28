@@ -50,7 +50,26 @@ const store = createStore({
                 console.error("Feil ved legging til oppskrift: ", error);
                 throw error;
             }
-
+        },
+        async updateRecipe({ commit }, updatedRecipe) {
+            const recipeRef = doc(db, "dinner-recipes", updatedRecipe.id); // Reference to the recipe document
+            try {
+                await setDoc(recipeRef, updatedRecipe); // Update the recipe in Firestore
+                commit('setRecipes', updatedRecipe); // Update the local state if needed
+                console.log("Recipe updated successfully.");
+            } catch (error) {
+                console.error("Error updating recipe:", error);
+            }
+        },
+        async removeRecipe({ commit }, recipeId) {
+            const recipeRef = doc(db, "dinner-recipes", recipeId); // Reference to the recipe document
+            try {
+                await deleteDoc(recipeRef); // Delete the recipe from Firestore
+                commit('removeRecipe', recipeId); // Update the Vuex state
+                console.log("Recipe deleted successfully.");
+            } catch (error) {
+                console.error("Error deleting recipe:", error);
+            }
         },
         async addNewFavorite({ commit }, recipeId) {
             const userId = auth.currentUser?.uid; // Ensure you're getting the user ID

@@ -1,22 +1,23 @@
 <template>
   <base-layout page-title="Velg Oppskrift">
-    <recipe-selector @findRecipe="handleRecipeSelection"></recipe-selector>
+    <recipe-selector :recipes="allRecipes" />
   </base-layout>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import RecipeSelector from '@/components/homepage/RecipeSelector.vue';
 
 export default {
-  name: 'HomePage',
+  name: 'Home',
   components: {
     RecipeSelector
   },
-  methods: {
-    handleRecipeSelection(recipe) {
-      // Logikk for hva som skjer når oppskriften er valgt
-      console.log('Valgt oppskrift:', recipe);
-    }
-  }
+  computed: {
+    ...mapGetters(['allRecipes'])
+  },
+  async mounted() {
+    await this.$store.dispatch('fetchRecipes'); // Fetch recipes on component mount
+  },
 }
 </script>

@@ -160,6 +160,6 @@ export default {
 
 <style scoped>
 .ingredient-input {
-    margin-bottom: 20px; /* Add spacing between ingredient input fields */
+    margin-bottom: 20px;
 }
-</style> // User
+</style>

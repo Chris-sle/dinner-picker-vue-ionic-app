@@ -5,6 +5,7 @@ import RecipeLibraryPage from '../pages/RecipeLibraryPage.vue';
 import UserProfilePage from '../pages/UserProfilePage.vue';
 import { auth } from '@/firebase';
 
+
 const routes = [
   { path: '/', redirect: '/auth' },
   { path: '/auth', name: 'Auth', component: Auth },
@@ -22,11 +23,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const user = auth.currentUser;
-  if (to.name !== 'Auth' && !user) {
-    next({ name: 'Auth' });
-  } else {
-    next();
-  }
+  if (to.name !== 'Auth' && !user) next({ name: 'Auth' });
+  else if (to.name === 'Auth' && user) next({ name: 'Home' });
+  else next();
 });
 
 export default router

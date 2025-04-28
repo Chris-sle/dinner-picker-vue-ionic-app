@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 
 import { auth } from '@/firebase'; // Importer auth fra Firebase
+import { signOut } from "firebase/auth";
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -51,6 +52,7 @@ auth.onAuthStateChanged(user => {
   if (user) {
     console.log('Bruker er innlogget:', user);
     store.dispatch('setUser', user); // Oppdaterer brukeren i store
+    
   } else {
     console.log('Ingen bruker er innlogget');
     store.dispatch('setUser', null); // Setter bruker til null
