@@ -55,8 +55,8 @@ const store = createStore({
             const recipeRef = doc(db, "dinner-recipes", updatedRecipe.id); // Reference to the recipe document
             try {
                 await setDoc(recipeRef, updatedRecipe); // Update the recipe in Firestore
-                commit('setRecipes', updatedRecipe); // Update the local state if needed
                 console.log("Recipe updated successfully.");
+                await dispatch('fetchRecipes'); // Fetch all recipes again to refresh the state
             } catch (error) {
                 console.error("Error updating recipe:", error);
             }
@@ -109,16 +109,16 @@ const store = createStore({
         },
         async removeNewFavorite({ commit }, recipeId) {
             commit('removeFavorite', recipeId); // Update local state immediately
-        
+
             const userId = auth.currentUser?.uid; // Ensure user is logged in
             const favoriteRef = doc(db, "userFavorites", userId); // Reference user favorites document
-        
+
             try {
                 const docSnap = await getDoc(favoriteRef);
                 if (docSnap.exists()) {
                     const existingFavorites = docSnap.data()?.favoriteIds || [];
                     const updatedFavorites = existingFavorites.filter(id => id !== recipeId);
-        
+
                     await setDoc(favoriteRef, {
                         favoriteIds: updatedFavorites // Update the favorites list
                     }, { merge: true });
@@ -140,7 +140,7 @@ const store = createStore({
                 }
             }
         },
-        
+
     },
     getters: {
         allRecipes: state => state.recipes,

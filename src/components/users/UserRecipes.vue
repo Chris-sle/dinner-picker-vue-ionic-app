@@ -11,11 +11,12 @@
                     </ion-thumbnail>
                     <ion-label>{{ recipe.name }}</ion-label>
                     <ion-buttons slot="end">
-                        <ion-button @click.stop="editRecipe(recipe.id)">Edit</ion-button>
+                        <ion-button @click.stop="openEditModal(recipe)">Edit</ion-button>
                         <ion-button @click.stop="deleteRecipe(recipe.id)">Delete</ion-button>
                     </ion-buttons>
                 </ion-item>
             </ion-list>
+            <edit-recipe-modal :is-open="isModalOpen" :recipe="selectedRecipe" @close="closeEditModal" />
         </ion-card-content>
     </ion-card>
 </template>
@@ -28,6 +29,7 @@ import {
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import EditRecipeModal from './EditRecipeModal.vue';
 
 export default {
     name: 'UserRecipes',
@@ -42,24 +44,35 @@ export default {
         IonThumbnail,
         IonImg,
         IonButtons,
-        IonButton
+        IonButton,
+        EditRecipeModal
     },
     setup() {
         const store = useStore();
         const router = useRouter();
 
         const userAddedRecipes = computed(() =>
-            store.state.recipes.filter(recipe => recipe.userId === store.state.user?.uid)
+            Array.isArray(store.state.recipes) ?
+                store.state.recipes.filter(recipe => recipe.userId === store.state.user?.uid) :
+                []
         );
 
         const showUserRecipes = ref(false);
+        const isModalOpen = ref(false);
+        const selectedRecipe = ref(null);
 
         const toggleUserRecipes = () => {
             showUserRecipes.value = !showUserRecipes.value; // Toggle visibility state
         };
 
-        const editRecipe = (recipeId) => {
-            router.push({ name: 'EditRecipe', params: { id: recipeId } });
+        const openEditModal = (recipe) => {
+            selectedRecipe.value = { ...recipe }; // Pass the whole recipe reference
+            isModalOpen.value = true;
+        };
+
+        const closeEditModal = () => {
+            isModalOpen.value = false;
+            selectedRecipe.value = null;
         };
 
         const deleteRecipe = async (recipeId) => {
@@ -69,7 +82,7 @@ export default {
             }
         };
 
-        return { userAddedRecipes, toggleUserRecipes, editRecipe, deleteRecipe, showUserRecipes };
+        return { userAddedRecipes, toggleUserRecipes, openEditModal, closeEditModal, deleteRecipe, showUserRecipes, isModalOpen, selectedRecipe };
     }
 }
 </script>
