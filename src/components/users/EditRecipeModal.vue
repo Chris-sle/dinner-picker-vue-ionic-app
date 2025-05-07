@@ -33,6 +33,12 @@
                             </ion-select>
                         </ion-item>
 
+                        <ion-item>
+                            <ion-textarea label="Fremgangsmåte" label-placement="floating" v-model="editRecipe.steps"
+                                rows="6" required placeholder="Beskriv fremgangsmåten">
+                            </ion-textarea>
+                        </ion-item>
+
                         <h4>Ingredients</h4>
                         <div v-for="(ingredient, index) in editRecipe.ingredients" :key="index"
                             class="ingredient-input">
@@ -59,13 +65,15 @@
 </template>
 
 <script>
-import { IonModal, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption } from '@ionic/vue';
+import { IonModal, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonButtons,
+         IonSelect, IonSelectOption } from '@ionic/vue';
 import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
     name: 'EditRecipeModal',
-    components: { IonModal, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption },
+    components: { IonModal, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonLabel, IonInput, IonTextarea, IonButton, 
+                  IonButtons, IonSelect, IonSelectOption },
     props: {
         isOpen: {
             type: Boolean,

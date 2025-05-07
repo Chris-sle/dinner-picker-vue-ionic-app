@@ -1,6 +1,15 @@
 import { createStore } from 'vuex';
 import { db, auth } from '@/firebase';
-import { collection, getDocs, getDoc, addDoc, setDoc, doc } from "firebase/firestore";
+import {
+    collection,
+    getDocs,
+    getDoc,
+    addDoc,
+    setDoc,
+    deleteDoc,
+    doc
+} from "firebase/firestore";
+import { updatePassword } from "firebase/auth";
 
 const store = createStore({
     state() {
@@ -26,6 +35,9 @@ const store = createStore({
         },
         setFavorites(state, favoriteIds) { // New mutation for setting favorites
             state.favoriteIds = favoriteIds;
+        },
+        removeRecipe(state, recipeId) { // Add this mutation
+            state.recipes = state.recipes.filter(recipe => recipe.id !== recipeId); // Filter out the deleted recipe
         }
     },
     actions: {
@@ -51,7 +63,7 @@ const store = createStore({
                 throw error;
             }
         },
-        async updateRecipe({ commit }, updatedRecipe) {
+        async updateRecipe({ commit, dispatch }, updatedRecipe) {
             const recipeRef = doc(db, "dinner-recipes", updatedRecipe.id); // Reference to the recipe document
             try {
                 await setDoc(recipeRef, updatedRecipe); // Update the recipe in Firestore
@@ -61,12 +73,13 @@ const store = createStore({
                 console.error("Error updating recipe:", error);
             }
         },
-        async removeRecipe({ commit }, recipeId) {
+        async removeRecipe({ commit, dispatch }, recipeId) {
             const recipeRef = doc(db, "dinner-recipes", recipeId); // Reference to the recipe document
             try {
                 await deleteDoc(recipeRef); // Delete the recipe from Firestore
                 commit('removeRecipe', recipeId); // Update the Vuex state
                 console.log("Recipe deleted successfully.");
+                // await dispatch('fetchRecipes');
             } catch (error) {
                 console.error("Error deleting recipe:", error);
             }
@@ -107,7 +120,7 @@ const store = createStore({
                 console.error("Error saving favorite:", error);
             }
         },
-        async removeNewFavorite({ commit }, recipeId) {
+        async removeFavorite({ commit }, recipeId) {
             commit('removeFavorite', recipeId); // Update local state immediately
 
             const userId = auth.currentUser?.uid; // Ensure user is logged in
@@ -140,7 +153,20 @@ const store = createStore({
                 }
             }
         },
-
+        async changePassword({ commit }, newPassword) {
+            const user = auth.currentUser; // Get the currently logged-in user
+            if (user) {
+                try {
+                    await updatePassword(user, newPassword); // Use Firebase auth to update password
+                    console.log("Password changed successfully.");
+                } catch (error) {
+                    console.error("Error changing password:", error);
+                    throw error; // Rethrow to handle in the component
+                }
+            } else {
+                throw new Error("User is not logged in."); // Handle case where user is not authenticated
+            }
+        }
     },
     getters: {
         allRecipes: state => state.recipes,

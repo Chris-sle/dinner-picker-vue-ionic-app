@@ -33,7 +33,7 @@ export default {
         ...mapActions(['addNewFavorite', 'removeNewFavorite']),
         toggleFavorite() {
             if (this.isFavorited) {
-                this.removeNewFavorite(this.recipeId);
+                this.removeFavorite(this.recipeId);
             } else {
                 this.addNewFavorite(this.recipeId);
             }

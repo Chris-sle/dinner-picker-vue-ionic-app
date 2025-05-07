@@ -5,7 +5,8 @@
         </ion-card-header>
         <ion-card-content>
             <ion-list v-if="showUserRecipes">
-                <ion-item v-for="recipe in userAddedRecipes" :key="recipe.id" button>
+                <ion-item v-for="recipe in userAddedRecipes" :key="recipe.id" @click="viewRecipeDetails(recipe.id)"
+                    button>
                     <ion-thumbnail slot="start">
                         <ion-img :src="recipe.image" alt="Recipe Image"></ion-img>
                     </ion-thumbnail>
@@ -82,7 +83,11 @@ export default {
             }
         };
 
-        return { userAddedRecipes, toggleUserRecipes, openEditModal, closeEditModal, deleteRecipe, showUserRecipes, isModalOpen, selectedRecipe };
+        const viewRecipeDetails = (recipeId) => {
+            router.push({ name: 'RecipeDetails', params: { id: recipeId } });
+        };
+
+        return { userAddedRecipes, toggleUserRecipes, openEditModal, closeEditModal, deleteRecipe, showUserRecipes, isModalOpen, selectedRecipe, viewRecipeDetails };
     }
 }
 </script>
